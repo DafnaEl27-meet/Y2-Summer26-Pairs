@@ -1,4 +1,22 @@
-I'm building an interactive visual dashboard for you that will show investment comparisons, compound growth projections, and a risk vs. return matrix tailored to your situation.
+Dave: You're asking for a visual overview of investment options available to you as a 16-year-old.
+
+Great question! As a 16-year-old, your investment options are more limited than adults, but you still have several solid paths forward:
+
+**Direct Investment Options:**
+- **Custodial Brokerage Account** – Your parent/guardian opens an account in your name. You can invest in stocks, ETFs, and mutual funds.
+- **Roth IRA (with earned income)** – If you have a job, you can open a Roth IRA and contribute up to your earned income or $7,000/year (whichever is less). Tax-free growth is huge at your age!
+- **High-Yield Savings Account (HYSA)** – Safe, liquid, and earns 4-5% APY. Great for emergency funds or short-term goals.
+- **Certificates of Deposit (CDs)** – Low-risk, fixed returns (currently 4-5% for short terms).
+
+**Indirect Options:**
+- **529 Education Savings Plan** – Your parents can set this up for your college costs (tax-advantaged).
+- **Peer-to-Peer Lending** – Some platforms allow teens with parental consent.
+- **Fractional Shares** – Apps like Fidelity or Schwab let you buy partial stocks with small amounts.
+
+**What You Can't Do Yet:**
+- Options trading, margin accounts, or day trading (typically require age 18+)
+
+Let me create a visual dashboard to show you these options with comparisons:
 
 
 
@@ -8,205 +26,178 @@ I'm building an interactive visual dashboard for you that will show investment c
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>16-Year-Old Investment Dashboard</title>
+    <title>Teen Investment Options Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-6">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-4xl font-bold mb-2">Investment Dashboard</h1>
-            <p class="text-slate-400">Monthly Income: $16,000 | Age: 16 | Time Horizon: 50+ Years</p>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Investment Options for 16-Year-Olds</h1>
+            <p class="text-gray-600">Explore where you can invest based on risk, returns, and accessibility</p>
         </div>
 
-        <!-- Key Metrics Row -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-6">
-                <p class="text-blue-200 text-sm mb-2">Annual Roth IRA Limit</p>
-                <p class="text-3xl font-bold">$7,000</p>
-                <p class="text-blue-300 text-xs mt-2">Tax-free growth forever</p>
-            </div>
-            <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-lg p-6">
-                <p class="text-green-200 text-sm mb-2">Monthly Investment Capacity</p>
-                <p class="text-3xl font-bold">$16,000</p>
-                <p class="text-green-300 text-xs mt-2">After taxes: ~$12,000</p>
-            </div>
-            <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg p-6">
-                <p class="text-purple-200 text-sm mb-2">Current HYSA Rate</p>
-                <p class="text-3xl font-bold">4.5%</p>
-                <p class="text-purple-300 text-xs mt-2">Risk-free savings</p>
-            </div>
-            <div class="bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg p-6">
-                <p class="text-orange-200 text-sm mb-2">Avg Stock Market Return</p>
-                <p class="text-3xl font-bold">10%</p>
-                <p class="text-orange-300 text-xs mt-2">Historical annual average</p>
-            </div>
-        </div>
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            
+            <!-- Investment Options Cards -->
+            <div class="lg:col-span-2">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Available Investment Vehicles</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    <!-- Custodial Brokerage -->
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                        <h3 class="text-lg font-bold text-blue-600 mb-2">Custodial Brokerage</h3>
+                        <p class="text-sm text-gray-600 mb-3">Parent-supervised stock/ETF investing</p>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold">Risk:</span> <span class="text-orange-500">Medium-High</span></p>
+                            <p><span class="font-semibold">Return:</span> <span class="text-green-500">7-10% avg</span></p>
+                            <p><span class="font-semibold">Liquidity:</span> <span class="text-blue-500">High</span></p>
+                            <p><span class="font-semibold">Min:</span> $0-100</p>
+                        </div>
+                    </div>
 
-        <!-- Timeline Slider & Compound Growth Chart -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="bg-slate-700 rounded-lg p-6 border border-slate-600">
-                <h2 class="text-2xl font-bold mb-4">Investment Timeline</h2>
-                <div class="mb-6">
-                    <label class="block text-sm font-semibold mb-2">Years to Invest: <span id="yearDisplay" class="text-blue-400">5</span></label>
-                    <input type="range" id="yearSlider" min="1" max="50" value="5" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500">
-                    <div class="flex justify-between text-xs text-slate-400 mt-2">
-                        <span>1 year</span>
-                        <span>50 years</span>
+                    <!-- Roth IRA -->
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                        <h3 class="text-lg font-bold text-green-600 mb-2">Roth IRA</h3>
+                        <p class="text-sm text-gray-600 mb-3">Tax-free growth (requires earned income)</p>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold">Risk:</span> <span class="text-orange-500">Medium-High</span></p>
+                            <p><span class="font-semibold">Return:</span> <span class="text-green-500">7-10% avg</span></p>
+                            <p><span class="font-semibold">Liquidity:</span> <span class="text-red-500">Low (locked)</span></p>
+                            <p><span class="font-semibold">Max:</span> $7,000/year</p>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-slate-800 rounded p-4 mb-4">
-                    <p class="text-slate-300 text-sm mb-2">Monthly Investment:</p>
-                    <input type="number" id="monthlyInvestment" value="10000" class="w-full bg-slate-600 text-white px-3 py-2 rounded border border-slate-500 text-sm">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-slate-800 rounded p-3">
-                        <p class="text-slate-400 text-xs">Total Invested</p>
-                        <p class="text-xl font-bold text-green-400" id="totalInvested">$600,000</p>
-                    </div>
-                    <div class="bg-slate-800 rounded p-3">
-                        <p class="text-slate-400 text-xs">Investment Gains</p>
-                        <p class="text-xl font-bold text-blue-400" id="investmentGains">$1,234,567</p>
-                    </div>
-                </div>
-            </div>
 
-            <div class="bg-slate-700 rounded-lg p-6 border border-slate-600">
-                <h2 class="text-2xl font-bold mb-4">Compound Growth Projection</h2>
-                <canvas id="compoundChart"></canvas>
-            </div>
-        </div>
+                    <!-- HYSA -->
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                        <h3 class="text-lg font-bold text-purple-600 mb-2">High-Yield Savings</h3>
+                        <p class="text-sm text-gray-600 mb-3">Safe, liquid, interest-bearing</p>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold">Risk:</span> <span class="text-green-500">Very Low</span></p>
+                            <p><span class="font-semibold">Return:</span> <span class="text-yellow-500">4-5% APY</span></p>
+                            <p><span class="font-semibold">Liquidity:</span> <span class="text-green-500">Instant</span></p>
+                            <p><span class="font-semibold">Min:</span> $0-25</p>
+                        </div>
+                    </div>
 
-        <!-- Product Comparison -->
-        <div class="bg-slate-700 rounded-lg p-6 border border-slate-600 mb-8">
-            <h2 class="text-2xl font-bold mb-6">Investment Product Comparison (10-Year Projection)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Roth IRA -->
-                <div class="bg-slate-800 rounded-lg p-5 border-l-4 border-blue-500">
-                    <h3 class="text-lg font-bold mb-3 text-blue-400">Roth IRA</h3>
-                    <div class="space-y-2 text-sm mb-4">
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Annual Contribution:</span>
-                            <span class="font-semibold">$7,000</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Avg Annual Return:</span>
-                            <span class="font-semibold text-green-400">10%</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">10-Year Balance:</span>
-                            <span class="font-bold text-blue-300">$111,234</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Tax on Gains:</span>
-                            <span class="font-semibold text-green-400">$0 (Tax-Free)</span>
+                    <!-- CDs -->
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-500">
+                        <h3 class="text-lg font-bold text-indigo-600 mb-2">Certificates of Deposit</h3>
+                        <p class="text-sm text-gray-600 mb-3">Fixed-term, guaranteed returns</p>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold">Risk:</span> <span class="text-green-500">Very Low</span></p>
+                            <p><span class="font-semibold">Return:</span> <span class="text-yellow-500">4-5.5% APY</span></p>
+                            <p><span class="font-semibold">Liquidity:</span> <span class="text-red-500">Low (locked)</span></p>
+                            <p><span class="font-semibold">Term:</span> 3mo-5yr</p>
                         </div>
                     </div>
-                    <div class="bg-blue-900 bg-opacity-30 rounded p-3 text-xs text-blue-200">
-                        ✓ Best for long-term wealth<br>✓ Tax-free withdrawals<br>✓ Can withdraw contributions anytime
-                    </div>
-                </div>
 
-                <!-- Brokerage Account -->
-                <div class="bg-slate-800 rounded-lg p-5 border-l-4 border-green-500">
-                    <h3 class="text-lg font-bold mb-3 text-green-400">Taxable Brokerage</h3>
-                    <div class="space-y-2 text-sm mb-4">
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Monthly Investment:</span>
-                            <span class="font-semibold">$3,000</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Avg Annual Return:</span>
-                            <span class="font-semibold text-green-400">10%</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">10-Year Balance:</span>
-                            <span class="font-bold text-green-300">$516,234</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Estimated Taxes:</span>
-                            <span class="font-semibold text-orange-400">~$15,000</span>
+                    <!-- 529 Plan -->
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-pink-500">
+                        <h3 class="text-lg font-bold text-pink-600 mb-2">529 Education Plan</h3>
+                        <p class="text-sm text-gray-600 mb-3">Tax-advantaged college savings</p>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold">Risk:</span> <span class="text-orange-500">Medium</span></p>
+                            <p><span class="font-semibold">Return:</span> <span class="text-green-500">6-8% avg</span></p>
+                            <p><span class="font-semibold">Liquidity:</span> <span class="text-red-500">Low (education)</span></p>
+                            <p><span class="font-semibold">Tax:</span> <span class="text-green-500">Tax-free</span></p>
                         </div>
                     </div>
-                    <div class="bg-green-900 bg-opacity-30 rounded p-3 text-xs text-green-200">
-                        ✓ Unlimited contributions<br>✓ Full flexibility<br>✓ Access anytime
-                    </div>
-                </div>
 
-                <!-- HYSA + CDs -->
-                <div class="bg-slate-800 rounded-lg p-5 border-l-4 border-purple-500">
-                    <h3 class="text-lg font-bold mb-3 text-purple-400">HYSA + CDs</h3>
-                    <div class="space-y-2 text-sm mb-4">
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Monthly Investment:</span>
-                            <span class="font-semibold">$2,000</span>
+                    <!-- ETFs/Index Funds -->
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-cyan-500">
+                        <h3 class="text-lg font-bold text-cyan-600 mb-2">ETFs & Index Funds</h3>
+                        <p class="text-sm text-gray-600 mb-3">Diversified, low-cost investing</p>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-semibold">Risk:</span> <span class="text-orange-500">Medium</span></p>
+                            <p><span class="font-semibold">Return:</span> <span class="text-green-500">7-10% avg</span></p>
+                            <p><span class="font-semibold">Liquidity:</span> <span class="text-green-500">High</span></p>
+                            <p><span class="font-semibold">Min:</span> $1-100</p>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Avg Annual Return:</span>
-                            <span class="font-semibold text-purple-400">4.5%</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">10-Year Balance:</span>
-                            <span class="font-bold text-purple-300">$267,891</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Tax on Gains:</span>
-                            <span class="font-semibold text-orange-400">~$8,000</span>
-                        </div>
-                    </div>
-                    <div class="bg-purple-900 bg-opacity-30 rounded p-3 text-xs text-purple-200">
-                        ✓ Zero risk<br>✓ FDIC insured<br>✓ Perfect for emergency fund
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Risk vs Return Matrix -->
-        <div class="bg-slate-700 rounded-lg p-6 border border-slate-600 mb-8">
-            <h2 class="text-2xl font-bold mb-6">Risk vs Return Matrix</h2>
-            <div class="bg-slate-800 rounded-lg p-8 relative" style="height: 400px;">
-                <svg class="w-full h-full" viewBox="0 0 800 400" style="max-height: 400px;">
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Risk vs Return Matrix</h2>
+            <div class="relative w-full h-96 border-2 border-gray-300 rounded-lg bg-gradient-to-br from-green-50 to-red-50 p-4">
+                <!-- Axes -->
+                <div class="absolute bottom-0 left-0 w-full h-full flex flex-col justify-between">
+                    <!-- Y-axis label -->
+                    <div class="absolute left-2 top-2 text-sm font-semibold text-gray-700">Expected Return ↑</div>
+                    <!-- X-axis label -->
+                    <div class="absolute bottom-2 right-2 text-sm font-semibold text-gray-700">Risk →</div>
+                    
                     <!-- Grid lines -->
-                    <line x1="80" y1="350" x2="750" y2="350" stroke="#475569" stroke-width="2"/>
-                    <line x1="80" y1="50" x2="80" y2="350" stroke="#475569" stroke-width="2"/>
+                    <svg class="absolute inset-0 w-full h-full" style="pointer-events: none;">
+                        <line x1="5%" y1="0" x2="5%" y2="100%" stroke="#e5e7eb" stroke-width="2"/>
+                        <line x1="0" y1="95%" x2="100%" y2="95%" stroke="#e5e7eb" stroke-width="2"/>
+                    </svg>
+                </div>
+
+                <!-- Plotted Points -->
+                <div class="absolute inset-0 flex items-end justify-start p-8">
+                    <!-- HYSA -->
+                    <div class="absolute" style="left: 15%; bottom: 20%;">
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:scale-110 transition" title="HYSA: Low Risk, 4-5% Return">HYSA</div>
+                    </div>
                     
-                    <!-- Axis labels -->
-                    <text x="400" y="390" text-anchor="middle" fill="#94a3b8" font-size="14" font-weight="bold">Risk Level →</text>
-                    <text x="20" y="200" text-anchor="middle" fill="#94a3b8" font-size="14" font-weight="bold" transform="rotate(-90 20 200)">Expected Return →</text>
+                    <!-- CDs -->
+                    <div class="absolute" style="left: 20%; bottom: 25%;">
+                        <div class="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:scale-110 transition" title="CDs: Very Low Risk, 4-5.5% Return">CDs</div>
+                    </div>
                     
-                    <!-- Risk categories -->
-                    <text x="200" y="375" text-anchor="middle" fill="#cbd5e1" font-size="12">Low</text>
-                    <text x="400" y="375" text-anchor="middle" fill="#cbd5e1" font-size="12">Medium</text>
-                    <text x="600" y="375" text-anchor="middle" fill="#cbd5e1" font-size="12">High</text>
+                    <!-- 529 Plan -->
+                    <div class="absolute" style="left: 45%; bottom: 50%;">
+                        <div class="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:scale-110 transition" title="529: Medium Risk, 6-8% Return">529</div>
+                    </div>
                     
-                    <!-- Return percentages -->
-                    <text x="60" y="355" text-anchor="end" fill="#cbd5e1" font-size="12">0%</text>
-                    <text x="60" y="255" text-anchor="end" fill="#cbd5e1" font-size="12">5%</text>
-                    <text x="60" y="155" text-anchor="end" fill="#cbd5e1" font-size="12">10%</text>
-                    <text x="60" y="55" text-anchor="end" fill="#cbd5e1" font-size="12">15%</text>
+                    <!-- ETFs/Index Funds -->
+                    <div class="absolute" style="left: 55%; bottom: 60%;">
+                        <div class="w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:scale-110 transition" title="ETFs: Medium Risk, 7-10% Return">ETFs</div>
+                    </div>
                     
-                    <!-- Investment products as circles -->
-                    <!-- HYSA: Low risk, 4.5% return -->
-                    <circle cx="150" cy="280" r="35" fill="#a78bfa" opacity="0.7"/>
-                    <text x="150" y="280" text-anchor="middle" dominant-baseline="middle" fill="white" font-weight="bold" font-size="12">HYSA</text>
-                    <text x="150" y="295" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="10">4.5%</text>
+                    <!-- Custodial Brokerage -->
+                    <div class="absolute" style="left: 65%; bottom: 65%;">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:scale-110 transition" title="Custodial: Medium-High Risk, 7-10% Return">Broker</div>
+                    </div>
                     
-                    <!-- CDs: Low risk, 4.8% return -->
-                    <circle cx="200" cy="270" r="35" fill="#a78bfa" opacity="0.7"/>
-                    <text x="200" y="270" text-anchor="middle" dominant-baseline="middle" fill="white" font-weight="bold" font-size="12">CDs</text>
-                    <text x="200" y="285" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="10">4.8%</text>
-                    
-                    <!-- Bonds: Low-Medium risk, 5.5% return -->
-                    <circle cx="300" cy="255" r="35" fill="#60a5fa" opacity="0.7"/>
-                    <text x="300" y="255" text-anchor="middle" dominant-baseline="middle" fill="white" font-weight="bold" font-size="12">Bonds</text>
-                    <text x="300" y="270" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="10">5.5%</text>
-                    
-                    <!-- Balanced ETFs: Medium risk, 8% return -->
-                    <circle cx="420" cy="190" r="40" fill="#34d399" opacity="0.7"/>
-                    <text x="420" y="190" text-anchor="middle" dominant-baseline="middle" fill="white" font-weight="bold" font-size="12">Balanced</text>
-                    <text x="420" y="208" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="10">ETFs (8%)</text>
-                    
-                    <!-- Stock Index Funds: Medium-High risk, 10% return -->
-                    <circle cx="550" cy="150" r="40" fill="#fbbf24" opacity="0.7"/>
-                    <text x
+                    <!-- Roth IRA -->
+                    <div class="absolute" style="left: 70%; bottom: 70%;">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold cursor-pointer hover:scale-110 transition" title="Roth IRA: Medium-High Risk, 7-10% Return">Roth</div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600 mt-4">💡 Hover over circles to see details. Generally: lower left = safer but slower growth; upper right = higher growth but more volatility</p>
+        </div>
+
+        <!-- Compound Growth Calculator -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Growth Projection Calculator</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Input Controls -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Initial Investment: $<span id="investmentValue">1000</span></label>
+                        <input type="range" id="investmentSlider" min="100" max="10000" step="100" value="1000" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>$100</span>
+                            <span>$10,000</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Monthly Contribution: $<span id="contributionValue">50</span></label>
+                        <input type="range" id="contributionSlider" min="0" max="500" step="10" value="50" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>$0</span>
+                            <span>$500</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="

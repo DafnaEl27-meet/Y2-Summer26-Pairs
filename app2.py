@@ -5,184 +5,123 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Check if API key exists
-api_key = os.getenv("ANTHROPIC_API_KEY")
+client = Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
 
-if not api_key:
-    print("Error: ANTHROPIC_API_KEY not found in environment variables.")
-    exit()
+system_message = """
+You are Dave, a helpful assistant that helps users with investing and savings options.
 
-client = Anthropic(api_key=api_key)
-
-system_message = """You are Jon Snow, a highly professional, analytical, and supportive personal finance and expenses manager.
-
-Your core responsibility is to help users manage their financial decisions, track expenses, and allocate their budget strictly based on their total income.
-
-Core Rules:
-- Income Constraint: You must operate strictly within the user's provided income. If their expenses exceed their income, clearly highlight the deficit and provide realistic adjustments.
-- Data Integrity: Never invent or use random numbers. Rely exclusively on the exact financial data provided by the user. If key data points (like fixed costs or exact income) are missing, ask for them.
-- Tone: Professional, clear, concise, and encouraging. Avoid unnecessary fluff or financial jargon; focus on actionable, practical advice.
-
-Response Format:
-1. One-Sentence Summary.
-2. Financial Assessment.
-3. Exactly one follow-up question.
+Your job is to answer all the user's questions about investing and savings.
 
 Rules:
-- Always work according to the given income.
-- Always spend strictly on the given expenses.
-- Never invent numbers.
+- Always answer the user's questions in a helpful and professional manner.
+- Always provide accurate information and never make up answers.
+- Don't answer questions that are not related to investing and savings (unless they ask you to export/save the current conversation history).
+
+Document Creation Trigger:
+- CRITICAL: IF the user asks you to save the conversation, make a copy of the chat, export, or generate a report as a document, you MUST include this exact tag at the very end of your response text: [CREATE_MARKDOWN]
+- Do not output the document content as raw text in the chat. Just confirm that you are generating it and append the tag.
+
+Visual Dashboard Trigger:
+- CRITICAL: IF the user asks you to create an interactive dashboard, visual comparison tool, calculator, matrix, or visual savings tracker, you MUST include this exact tag at the very end of your response text: [CREATE_DASHBOARD]
+- Underneath that tag, output the FULL, raw, self-contained HTML/CSS/JS code block. The code must use Tailwind CSS via CDN for styling. It must feature dynamic sliders for timelines (1 month to 5 years), compound interest formulas reflecting actual product structures (HYSA vs CD vs T-Bill), and a visual Risk vs Return matrix/grid. 
+- Do not explain the code in the chat. Just confirm you are building it, append the tag, and output the code block.
+
+Response format (for normal chat replies):
+- Start with a one-sentence summary of what the user said.
+- Then give your response.
+- End with one follow-up question.
 """
 
+def create_markdown_document(chat_history):
+    """Processes live chat history, strips tags, and exports a clean .md file."""
+    md_content = []
+    md_content.append("# Financial Advisory Session Transcript\n")
+    md_content.append("**Assistant Agent:** Dave (*Investing & Savings Expert*)\n")
+    md_content.append("---\n") 
+    
+    for message in chat_history:
+        role = message['role'].capitalize()
+        content = message['content']
+        
+        clean_content = re.sub(r'\[CREATE_MARKDOWN\]|\[CREATE_DASHBOARD\]', '', content).strip()
+        if "```html" in clean_content:
+            clean_content = clean_content.split("```html")[0].strip()
+            
+        if not clean_content:
+            continue
+            
+        if role == 'User':
+            md_content.append(f"### 👤 You\n> {clean_content}\n")
+        else:
+            md_content.append(f"### {clean_content.split(':')[0] if ':' in clean_content else '🤖 AI'}\n> {clean_content}\n")
+            
+    filename = "Financial_Chat_Summary.md"
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("\n".join(md_content))
+    return filename
 
-def create_markdown_document(client, history, system_message):
-    """Generate a professional Markdown report of the conversation."""
+def create_html_dashboard(raw_reply):
+    """Extracts the HTML code block from Claude's response and writes it to a file."""
+    code_block_match = re.search(r'```html\s*(.*?)\s*```', raw_reply, re.DOTALL)
+    if code_block_match:
+        html_content = code_block_match.group(1)
+    else:
+        html_content = re.sub(r'\[CREATE_DASHBOARD\]', '', raw_reply).strip()
 
-    if not history:
-        print("There is no conversation to summarize.")
-        return None
-
-    summary_prompt = """
-Create a professional financial report summarizing our conversation.
-
-Include:
-
-- Overall financial situation
-- Income mentioned
-- Expenses mentioned
-- Budget recommendations
-- Savings advice
-- Financial concerns
-- Action items
-- Remaining questions
-
-Only include information that actually appeared.
-Do not invent facts or numbers.
-
-After the report, include a complete transcript of the conversation.
-"""
-
-    try:
-        response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=1500,
-            temperature=0,
-            system=system_message,
-            messages=history + [
-                {
-                    "role": "user",
-                    "content": summary_prompt
-                }
-            ]
-        )
-
-        summary = response.content[0].text
-
-        md = []
-
-        md.append("# 💰 Jon Snow Financial Report")
-        md.append("")
-        md.append("---")
-        md.append("")
-        md.append("## AI Summary")
-        md.append("")
-        md.append(summary)
-        md.append("")
-        md.append("---")
-        md.append("")
-        md.append("## Full Conversation")
-        md.append("")
-
-        for message in history:
-
-            role = message["role"]
-            content = re.sub(r"\[CREATE_MARKDOWN\]", "", message["content"]).strip()
-
-            if role == "user":
-                md.append(f"### 👤 You")
-            else:
-                md.append(f"### 🤖 Jon Snow")
-
-            md.append("")
-            md.append(content)
-            md.append("")
-            md.append("---")
-            md.append("")
-
-        filename = "Financial_Chat_Report.md"
-
-        with open(filename, "w", encoding="utf-8") as file:
-            file.write("\n".join(md))
-
-        return filename
-
-    except Exception as e:
-        print(f"Error generating report: {e}")
-        return None
+    filename = "savings_dashboard.html"
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(html_content)
+    return filename
 
 
-def run_chat():
-
-    print('Jon Snow: "Winter is coming, and so are your bills."')
-    print("Type 'summary' to generate a Markdown report.")
-    print("Type 'exit' to quit.\n")
-
-    history = []
+# CHANGED: Accepts history parameter from main.py
+def run_chat(history):
+    print('\Dave: Hello! I am Dave. Ask me anything about investing or savings.')
+    print("Type 'return' to switch back to the main menu.\n")
 
     while True:
-
-        user_input = input(">> ").strip()
-
-        if user_input.lower() == "exit":
-            print("Goodbye!")
+        user_input = input('Dave >> ')
+        
+        if user_input.lower() in ['exit', 'return']:
+            print("Returning to main menu...\n")
             break
 
-        if user_input.lower() == "summary":
-
-            filename = create_markdown_document(
-                client,
-                history,
-                system_message
-            )
-
-            if filename:
-                print(f"\n✅ Report created successfully!")
-                print(f"📄 Saved as: {filename}")
-                print("Open it in VS Code and press Ctrl+Shift+V for a formatted preview.\n")
-
-            continue
-
-        history.append(
-            {
-                "role": "user",
-                "content": user_input
-            }
-        )
-
-        try:
-
+        history.append({'role': 'user', 'content': user_input})
+        
+        try: 
             response = client.messages.create(
-                model="claude-haiku-4-5-20251001",
-                max_tokens=300,
-                temperature=0.7,
+                model='claude-4-5-20250227', 
+                max_tokens=4000, 
+                temperature=0.3,  
                 system=system_message,
                 messages=history
             )
-
-            reply = response.content[0].text
-
-            print(f"\nJon Snow: {reply}\n")
-
-            history.append(
-                {
-                    "role": "assistant",
-                    "content": reply
-                }
-            )
-
         except Exception as e:
-            print(f"\nSomething went wrong: {e}")
+            print(f"Something went wrong with the API call: {e}")
             break
 
+        reply = f"Dave: {response.content[0].text}"
+        
+        # --- AGENT AUTOMATED DOCUMENT CREATION ---
+        if "[CREATE_MARKDOWN]" in reply:
+            print(f'\nDave: Creating your Markdown document now...')
+            try:
+                saved_file = create_markdown_document(history)
+                print(f"✅ Success: Document saved as '{saved_file}' in your VS Code workspace!\n")
+            except Exception as file_err:
+                print(f"⚠️ Failed to generate Markdown file: {file_err}")
+                
+        # --- AGENT AUTOMATED INTERACTIVE DASHBOARD GENERATION ---
+        elif "[CREATE_DASHBOARD]" in reply:
+            print(f'\nDave: Building your live interactive savings dashboard app now...')
+            try:
+                text_intro = reply.split("[CREATE_DASHBOARD]")[0].strip()
+                print(f"\n{text_intro}")
+                saved_dashboard = create_html_dashboard(reply)
+                print(f"\n🚀 Success: Dashboard application written to '{saved_dashboard}'!\n")
+            except Exception as html_err:
+                print(f"⚠️ Failed to generate HTML Dashboard file: {html_err}")
+        else:
+            print(f'\n{reply}\n')
 
-run_chat()
+        history.append({'role': 'assistant', 'content': reply})
