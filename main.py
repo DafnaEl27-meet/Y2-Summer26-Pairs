@@ -11,7 +11,7 @@ def main():
     print("Hello user. In this program, you can chat with two ai models.")
     print("The first is an ai assistant that can calculate and answer your questions about finance.")
     print("The second is an ai model that can help you find good investment and savings options.")
-    print("✨ Both models now share the exact same conversational memory track!")
+    print("Both models now share the exact same conversational memory track!")
 
     while True:
         print("\nWhich agent do you want to use?")

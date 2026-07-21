@@ -1,5 +1,6 @@
 import os
 import re
+from tkinter import Tk, filedialog  # Added for visual folder picker
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
@@ -32,8 +33,23 @@ Response format (for normal chat replies):
 - End with one follow-up question.
 """
 
+def get_user_save_directory():
+    """Opens a native visual folder picker dialog window."""
+    print("Select a destination folder in the pop-up window...")
+    root = Tk()
+    root.withdraw()  # Hide the main tiny tkinter window
+    root.attributes('-topmost', True)  # Bring folder picker window to the front
+    
+    selected_dir = filedialog.askdirectory(title="Choose Where to Save the File")
+    root.destroy()  # Clean up tkinter instance
+    
+    if not selected_dir:
+        print("⚠️ Save location not selected. Saving to current workspace instead.")
+        return "."  # Fallback to current folder if user closes window
+    return selected_dir
+
 def create_markdown_document(chat_history):
-    """Processes live chat history, strips tags, and exports a clean .md file."""
+    """Processes live chat history, strips tags, and exports a clean .md file to a chosen path."""
     md_content = []
     md_content.append("# Financial Advisory Session Transcript\n")
     md_content.append("**Assistant Agent:** Dave (*Investing & Savings Expert*)\n")
@@ -55,33 +71,44 @@ def create_markdown_document(chat_history):
         else:
             md_content.append(f"### {clean_content.split(':')[0] if ':' in clean_content else '🤖 AI'}\n> {clean_content}\n")
             
+    # Get user folder selection and build full path
+    target_dir = get_user_save_directory()
     filename = "Financial_Chat_Summary.md"
-    with open(filename, "w", encoding="utf-8") as f:
+    full_save_path = os.path.join(target_dir, filename)
+
+    with open(full_save_path, "w", encoding="utf-8") as f:
         f.write("\n".join(md_content))
-    return filename
+    return full_save_path
 
 def create_html_dashboard(raw_reply):
-    """Extracts the HTML code block from Claude's response and writes it to a file."""
+    """Extracts the HTML code block from Claude's response and writes it to a chosen path."""
     code_block_match = re.search(r'```html\s*(.*?)\s*```', raw_reply, re.DOTALL)
     if code_block_match:
         html_content = code_block_match.group(1)
     else:
         html_content = re.sub(r'\[CREATE_DASHBOARD\]', '', raw_reply).strip()
 
+    # Get user folder selection and build full path
+    target_dir = get_user_save_directory()
     filename = "savings_dashboard.html"
-    with open(filename, "w", encoding="utf-8") as f:
+    full_save_path = os.path.join(target_dir, filename)
+
+    with open(full_save_path, "w", encoding="utf-8") as f:
         f.write(html_content)
-    return filename
+    return full_save_path
 
 
 # CHANGED: Accepts history parameter from main.py
 def run_chat(history):
-    print('\Dave: Hello! I am Dave. Ask me anything about investing or savings.')
+    print('\nDave: Hello! I am Dave. Ask me anything about investing or savings.')
     print("Type 'return' to switch back to the main menu.\n")
 
     while True:
-        user_input = input('Dave >> ')
+        user_input = input('Dave >> ').strip()
         
+        if not user_input:
+            continue
+
         if user_input.lower() in ['exit', 'return']:
             print("Returning to main menu...\n")
             break
@@ -90,7 +117,7 @@ def run_chat(history):
         
         try: 
             response = client.messages.create(
-                model='claude-4-5-20250227', 
+                model='claude-3-5-sonnet-20241022', # Standard active model identifier 
                 max_tokens=4000, 
                 temperature=0.3,  
                 system=system_message,
@@ -107,7 +134,7 @@ def run_chat(history):
             print(f'\nDave: Creating your Markdown document now...')
             try:
                 saved_file = create_markdown_document(history)
-                print(f"✅ Success: Document saved as '{saved_file}' in your VS Code workspace!\n")
+                print(f"✅ Success: Document saved at:\n👉 {saved_file}\n")
             except Exception as file_err:
                 print(f"⚠️ Failed to generate Markdown file: {file_err}")
                 
@@ -118,10 +145,14 @@ def run_chat(history):
                 text_intro = reply.split("[CREATE_DASHBOARD]")[0].strip()
                 print(f"\n{text_intro}")
                 saved_dashboard = create_html_dashboard(reply)
-                print(f"\n🚀 Success: Dashboard application written to '{saved_dashboard}'!\n")
+                print(f"\n🚀 Success: Dashboard application written to:\n👉 {saved_dashboard}\n")
             except Exception as html_err:
                 print(f"⚠️ Failed to generate HTML Dashboard file: {html_err}")
         else:
             print(f'\n{reply}\n')
 
         history.append({'role': 'assistant', 'content': reply})
+
+if __name__ == "__main__":
+    conversation_history = []
+    run_chat(conversation_history)
