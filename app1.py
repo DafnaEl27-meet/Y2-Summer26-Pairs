@@ -1,42 +1,50 @@
 import os
 import re
+import sys
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Check if API key exists
 api_key = os.getenv("ANTHROPIC_API_KEY")
 
 if not api_key:
-    print("Error: ANTHROPIC_API_KEY not found in environment variables.")
-    exit()
+    print("Error: ANTHROPIC_API_KEY not found.")
+    sys.exit(1)
 
 client = Anthropic(api_key=api_key)
 
-system_message = """You are Jon Snow, a highly professional, analytical, and supportive personal finance and expenses manager.
+MODEL = "claude-sonnet-4-20250514"   # Change to a model available to your account
+
+MAX_HISTORY = 20
+
+system_message = """
+You are Jon Snow, a highly professional, analytical, and supportive personal finance and expenses manager.
 
 Your core responsibility is to help users manage their financial decisions, track expenses, and allocate their budget strictly based on their total income.
 
 Core Rules:
-- Income Constraint: You must operate strictly within the user's provided income. If their expenses exceed their income, clearly highlight the deficit and provide realistic adjustments.
-- Data Integrity: Never invent or use random numbers. Rely exclusively on the exact financial data provided by the user. If key data points (like fixed costs or exact income) are missing, ask for them.
-- Tone: Professional, clear, concise, and encouraging. Avoid unnecessary fluff or financial jargon; focus on actionable, practical advice.
+- Income Constraint: You must operate strictly within the user's provided income.
+- Never invent numbers.
+- If information is missing, ask for it.
 
 Response Format:
-1. One-Sentence Summary.
-2. Financial Assessment.
+1. One-sentence summary.
+2. Financial assessment.
 3. Exactly one follow-up question.
-
-Rules:
-- Always work according to the given income.
-- Always spend strictly on the given expenses.
-- Never invent numbers.
 """
 
 
+def extract_text(response):
+    return "".join(
+        block.text
+        for block in response.content
+        if hasattr(block, "text")
+    )
+
+
 def create_markdown_document(client, history, system_message):
-    """Generate a professional Markdown report of the conversation."""
+
     if not history:
         print("There is no conversation to summarize.")
         return None
@@ -54,19 +62,20 @@ Include:
 - Action items
 - Remaining questions
 
-Only include information that actually appeared.
-Do not invent facts or numbers.
+Only include information actually mentioned.
+Never invent numbers.
 
-After the report, include a complete transcript of the conversation.
+After the report include the full transcript.
 """
 
     try:
+
         response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
+            model=MODEL,
             max_tokens=1500,
             temperature=0,
             system=system_message,
-            messages=history + [
+            messages=history[-MAX_HISTORY:] + [
                 {
                     "role": "user",
                     "content": summary_prompt
@@ -74,30 +83,35 @@ After the report, include a complete transcript of the conversation.
             ]
         )
 
-        summary = response.content[0].text
-        md = []
+        summary = extract_text(response)
 
-        md.append("# 💰 Jon Snow Financial Report")
-        md.append("")
-        md.append("---")
-        md.append("")
-        md.append("## AI Summary")
-        md.append("")
-        md.append(summary)
-        md.append("")
-        md.append("---")
-        md.append("")
-        md.append("## Full Conversation")
-        md.append("")
+        md = [
+            "# 💰 Jon Snow Financial Report",
+            "",
+            "---",
+            "",
+            "## AI Summary",
+            "",
+            summary,
+            "",
+            "---",
+            "",
+            "## Full Conversation",
+            ""
+        ]
 
         for message in history:
-            role = message["role"]
-            content = re.sub(r"\[CREATE_MARKDOWN\]", "", message["content"]).strip()
 
-            if role == "user":
-                md.append(f"### 👤 You")
+            content = re.sub(
+                r"\[CREATE_MARKDOWN\]",
+                "",
+                message["content"]
+            ).strip()
+
+            if message["role"] == "user":
+                md.append("### 👤 You")
             else:
-                md.append(f"### {content.split(':')[0] if ':' in content else '🤖 AI'}")
+                md.append("### 🤖 Jon Snow")
 
             md.append("")
             md.append(content)
@@ -106,8 +120,9 @@ After the report, include a complete transcript of the conversation.
             md.append("")
 
         filename = "Financial_Chat_Report.md"
-        with open(filename, "w", encoding="utf-8") as file:
-            file.write("\n".join(md))
+
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write("\n".join(md))
 
         return filename
 
@@ -116,43 +131,61 @@ After the report, include a complete transcript of the conversation.
         return None
 
 
-# CHANGED: Accepts history parameter from main.py
 def run_chat(history):
+
     print('\nJon Snow: "Winter is coming, and so are your bills."')
-    print("Type 'summary' to generate a Markdown report.")
-    print("Type 'return' to switch back to the main menu.\n")
+    print("Type 'summary' to generate a report.")
+    print("Type 'return' to go back.\n")
 
     while True:
+
         user_input = input("Jon Snow >> ").strip()
 
-        # Safely return back to main selection menu
-        if user_input.lower() in ['exit', 'return']:
-            print("Returning to main menu...\n")
+        if user_input.lower() in ("return", "exit"):
+            print("Returning to menu...\n")
             break
 
         if user_input.lower() == "summary":
-            filename = create_markdown_document(client, history, system_message)
+
+            filename = create_markdown_document(
+                client,
+                history,
+                system_message
+            )
+
             if filename:
-                print(f"\n✅ Report created successfully!")
-                print(f"📄 Saved as: {filename}")
-                print("Open it in VS Code and press Ctrl+Shift+V for a formatted preview.\n")
+                print(f"\nReport saved as {filename}\n")
+
             continue
 
-        history.append({"role": "user", "content": user_input})
+        history.append(
+            {
+                "role": "user",
+                "content": user_input
+            }
+        )
 
         try:
+
             response = client.messages.create(
-                model="claude-haiku-4-5-20251001",
+                model=MODEL,
                 max_tokens=300,
                 temperature=0.7,
                 system=system_message,
-                messages=history
+                messages=history[-MAX_HISTORY:]
             )
 
-            reply = f"Jon Snow: {response.content[0].text}"
-            print(f"\n{reply}\n")
-            history.append({"role": "assistant", "content": reply})
+            reply = extract_text(response)
+
+            print(f"\nJon Snow: {reply}\n")
+
+            history.append(
+                {
+                    "role": "assistant",
+                    "content": reply
+                }
+            )
 
         except Exception as e:
-            print(f"\nSomething went wrong: {e}")
+            print(f"\nSomething went wrong:\n{e}")
             break
